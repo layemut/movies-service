@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import tr.com.layemut.moviesservice.config.Messages;
 import tr.com.layemut.moviesservice.entity.Person;
 import tr.com.layemut.moviesservice.entity.Result;
 import tr.com.layemut.moviesservice.entity.request.AuthRequest;
@@ -23,10 +24,13 @@ public class PersonController {
 
     private static final Logger logger = LoggerFactory.getLogger(PersonController.class);
     private PersonRepository personRepository;
+    private Messages messages;
 
     @Autowired
-    public PersonController(PersonRepository personRepository) {
+    public PersonController(PersonRepository personRepository,
+                            Messages messages) {
         this.personRepository = personRepository;
+        this.messages = messages;
     }
 
     @PostMapping("/authenticate")
@@ -52,11 +56,11 @@ public class PersonController {
         Person person = personRepository.findByUserNameAndPassword(authRequest.getUserName(), authRequest.getPassword());
 
         result.setCode(400);
-        result.setMessage("Kullanıcı adı/Şifre yanlış");
+        result.setMessage(messages.get("username_password_not_exists"));
 
         if (person != null) {
             result.setCode(200);
-            result.setMessage("Başarılı");
+            result.setMessage(messages.get("success"));
         }
 
         PersonAuthResponse personAuthResponse = new PersonAuthResponse();
@@ -88,14 +92,14 @@ public class PersonController {
 
         if (duplicatePerson != null) {
             result.setCode(404);
-            result.setMessage("Kullanıcı adı daha önce alınmış.");
+            result.setMessage(messages.get("username_taken"));
             personCreateResponse.setResult(result);
             return personCreateResponse;
         }
 
         Person createdPerson = personRepository.insert(personRequest);
 
-        personCreateResponse.setResult(new Result("Başarılı", 200));
+        personCreateResponse.setResult(new Result(messages.get("success"), 200));
         personCreateResponse.setPerson(createdPerson);
 
         return personCreateResponse;
