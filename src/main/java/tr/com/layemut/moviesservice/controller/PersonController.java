@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import tr.com.layemut.moviesservice.config.Messages;
@@ -33,59 +35,47 @@ public class PersonController {
         this.messages = messages;
     }
 
-    @PostMapping("/authenticate")
-    public PersonAuthResponse authenticate(@Valid AuthRequest authRequest, Errors errors) {
+    @PostMapping(value = "/authenticate")
+    public ResponseEntity authenticate(@Valid @RequestBody AuthRequest authRequest, Errors errors) {
 
         logger.info(authRequest.toString());
 
+        PersonAuthResponse personAuthResponse = new PersonAuthResponse();
         Result result = new Result();
 
         if (errors.hasErrors()) {
-            result.setMessage(errors.getAllErrors()
-                    .stream()
-                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .collect(Collectors.joining(",")));
-            result.setCode(400);
-
-            PersonAuthResponse personAuthResponse = new PersonAuthResponse();
-            personAuthResponse.setResult(result);
-
-            return personAuthResponse;
+            personAuthResponse.setResult(generateResultFromErrors(errors));
+            return ResponseEntity.badRequest().body(personAuthResponse);
         }
 
         Person person = personRepository.findByUserNameAndPassword(authRequest.getUserName(), authRequest.getPassword());
 
-        result.setCode(400);
-        result.setMessage(messages.get("username_password_not_exists"));
-
         if (person != null) {
             result.setCode(200);
             result.setMessage(messages.get("success"));
+            personAuthResponse.setPerson(person);
+            personAuthResponse.setResult(result);
+
+            return ResponseEntity.ok().body(personAuthResponse);
+        } else {
+            result.setCode(401);
+            result.setMessage(messages.get("username_password_not_exists"));
+
+            personAuthResponse.setResult(result);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(personAuthResponse);
         }
-
-        PersonAuthResponse personAuthResponse = new PersonAuthResponse();
-        personAuthResponse.setPerson(person);
-        personAuthResponse.setResult(result);
-
-        return personAuthResponse;
     }
 
-    @PostMapping("create")
-    public PersonCreateResponse create(@Valid Person personRequest, Errors errors) {
+    @PostMapping(value = "/create")
+    public ResponseEntity create(@Valid @RequestBody Person personRequest, Errors errors) {
 
         PersonCreateResponse personCreateResponse = new PersonCreateResponse();
         Result result = new Result();
 
         if (errors.hasErrors()) {
-            result.setMessage(errors.getAllErrors()
-                    .stream()
-                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .collect(Collectors.joining(",")));
-            result.setCode(400);
+            personCreateResponse.setResult(generateResultFromErrors(errors));
 
-            personCreateResponse.setResult(result);
-
-            return personCreateResponse;
+            return ResponseEntity.badRequest().body(personCreateResponse);
         }
 
         Person duplicatePerson = personRepository.findByUserName(personRequest.getUserName());
@@ -94,7 +84,7 @@ public class PersonController {
             result.setCode(404);
             result.setMessage(messages.get("username_taken"));
             personCreateResponse.setResult(result);
-            return personCreateResponse;
+            return ResponseEntity.ok().body(personCreateResponse);
         }
 
         Person createdPerson = personRepository.insert(personRequest);
@@ -102,6 +92,17 @@ public class PersonController {
         personCreateResponse.setResult(new Result(messages.get("success"), 200));
         personCreateResponse.setPerson(createdPerson);
 
-        return personCreateResponse;
+        return ResponseEntity.ok().body(personCreateResponse);
+    }
+
+
+    private Result generateResultFromErrors(Errors errors) {
+        Result result = new Result();
+        result.setCode(400);
+        result.setMessage(errors.getAllErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining(",")));
+        return result;
     }
 }

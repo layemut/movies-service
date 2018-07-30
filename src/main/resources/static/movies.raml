@@ -1,0 +1,75 @@
+#%RAML 1.0
+title: MOVIE SERVICE
+version: 1.0
+baseUri: www.ozcancandag.me:8080/movies-service-1.0
+
+/person:
+    displayName: Persons
+
+    description: |
+        Person operations.
+
+    /authenticate:
+        description: Person authentication.
+        post:
+            description: Person authentication.
+            body:
+                application/json:
+                        example: |
+                          {
+                            "userName": "test",
+                            "password": "test"
+                          }
+            responses:
+                200:
+                    description: OK
+                    body:
+                        application/json:
+                            example: |
+                                {
+                                    "result": {
+                                        "message": "Başarılı.",
+                                        "code": 200
+                                    },
+                                    "person": {
+                                        "id": {
+                                            "timestamp": 1532433465,
+                                            "machineIdentifier": 11387542,
+                                            "processIdentifier": 8498,
+                                            "counter": 13386143,
+                                            "time": 1532433465000,
+                                            "date": "2018-07-24T11:57:45.000+0000",
+                                            "timeSecond": 1532433465
+                                        },
+                                        "name": "Özcan",
+                                        "surName": "Candağ",
+                                        "userName": "test",
+                                        "age": 25,
+                                        "gender": "E"
+                                    }
+                                }
+                401:
+                    description: Unauthorized
+                    body:
+                        application/json:
+                            example: |
+                                {
+                                    "result": {
+                                        "message": "Kullanıcı adı/Şifre yanlış.",
+                                        "code": 401
+                                    },
+                                    "person": null
+                                }
+                400:
+                    description: Bad Request
+                    body:
+                        application/json:
+                            example: |
+                                {
+                                    "result": {
+                                        "message": "Parola boş bırakılamaz.",
+                                        "code": 400
+                                    },
+                                    "person": null
+                                }
+
