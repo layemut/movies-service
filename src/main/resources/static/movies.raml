@@ -67,9 +67,104 @@ baseUri: www.ozcancandag.me:8080/movies-service-1.0
                             example: |
                                 {
                                     "result": {
-                                        "message": "Parola boş bırakılamaz.",
+                                        "message": "Password cannot be null.",
                                         "code": 400
                                     },
                                     "person": null
                                 }
+    /create:
+            description: Person creation.
+            post:
+                description: Person creation.
+                body:
+                    application/json:
+                            example: |
+                              {
+                              	"name":"Gökhan",
+                              	"surName":"Candağ",
+                              	"userName":"test",
+                              	"password":"test1234",
+                              	"age":31,
+                              	"gender": "E"
+                              }
+                responses:
+                    200:
+                        description: OK
+                        body:
+                            application/json:
+                                example: |
+                                    {
+                                        "result": {
+                                            "message": "Operation successful.",
+                                            "code": 200
+                                        },
+                                        "person": {
+                                            "id": {
+                                                "timestamp": 1532938904,
+                                                "machineIdentifier": 11387542,
+                                                "processIdentifier": 2453,
+                                                "counter": 332483,
+                                                "timeSecond": 1532938904,
+                                                "time": 1532938904000,
+                                                "date": "2018-07-30T08:21:44.000+0000"
+                                            },
+                                            "name": "Gökhan",
+                                            "surName": "Candağ",
+                                            "userName": "pygmyad2f4",
+                                            "age": 31,
+                                            "gender": "E"
+                                        }
+                                    }
+                    400:
+                        description: Bad Request
+                        body:
+                            application/json:
+                                example: |
+                                    {
+                                        "result": {
+                                            "message": "Password cannot be null.",
+                                            "code": 400
+                                        },
+                                        "person": null
+                                    }
+    /delete:
+            description: Person deletion.
+            get:
+                description: Person deletion.
+                queryParameters:
+                    userName:
+                        type: string
+                        required: true
+                        example: test
+                responses:
+                    200:
+                        description: OK
+                        body:
+                            application/json:
+                                example: |
+                                    {
+                                        "message": "test isimli kullanıcı başarı ile silindi.",
+                                        "code": 200
+                                    }
+                    400:
+                        description: Bad Request
+                        body:
+                            application/json:
+                                example: |
+                                    {
+                                        "result": {
+                                            "message": "Username cannot be null.",
+                                            "code": 400
+                                        },
+                                        "person": null
+                                    }
+                    404:
+                        description: Not Found
+                        body:
+                            application/json:
+                                example: |
+                                    {
+                                        "message": "test isimli kullanıcı bulunamadı.",
+                                        "code": 404
+                                    }
 

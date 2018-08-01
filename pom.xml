@@ -83,6 +83,18 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>1.2.2.Final</version>
+                <configuration>
+                    <hostname>188.166.96.177</hostname>
+                    <port>9990</port>
+                    <username>ozcan</username>
+                    <password>0Zc4n!1453</password>
+                    <name>movies-service-1.0.war</name>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
