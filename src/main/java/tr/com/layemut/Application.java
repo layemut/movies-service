@@ -8,7 +8,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @EnableAutoConfiguration
 public class Application {
 
-    public static void main(String[] args){ 
+    public static void main(String[] args){
+        if(true){
+            //TTEAST
+        }
         SpringApplication.run(Application.class, args);
     }
 }
