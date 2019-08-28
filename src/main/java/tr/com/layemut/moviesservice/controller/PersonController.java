@@ -1,6 +1,5 @@
 package tr.com.layemut.moviesservice.controller;
 
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ import tr.com.layemut.moviesservice.repository.PersonRepository;
 import javax.validation.Valid;
 import java.util.stream.Collectors;
 
-
 @RestController
 @RequestMapping("/person")
 public class PersonController {
@@ -30,14 +28,13 @@ public class PersonController {
     private Messages messages;
 
     @Autowired
-    public PersonController(PersonRepository personRepository,
-                            Messages messages) {
+    public PersonController(PersonRepository personRepository, Messages messages) {
         this.personRepository = personRepository;
         this.messages = messages;
     }
 
     @PostMapping(value = "/authenticate")
-    public ResponseEntity authenticate(@Valid @RequestBody AuthRequest authRequest, Errors errors) {
+    public ResponseEntity<PersonAuthResponse> authenticate(@Valid @RequestBody AuthRequest authRequest, Errors errors) {
 
         logger.info(authRequest.toString());
 
@@ -49,7 +46,8 @@ public class PersonController {
             return ResponseEntity.badRequest().body(personAuthResponse);
         }
 
-        Person person = personRepository.findByUserNameAndPassword(authRequest.getUserName(), authRequest.getPassword());
+        Person person = personRepository.findByUserNameAndPassword(authRequest.getUserName(),
+                authRequest.getPassword());
 
         if (person != null) {
             result.setCode(200);
@@ -68,7 +66,7 @@ public class PersonController {
     }
 
     @PostMapping(value = "/create")
-    public ResponseEntity create(@Valid @RequestBody Person personRequest, Errors errors) {
+    public ResponseEntity<PersonCreateResponse> create(@Valid @RequestBody Person personRequest, Errors errors) {
 
         PersonCreateResponse personCreateResponse = new PersonCreateResponse();
         Result result = new Result();
@@ -88,7 +86,7 @@ public class PersonController {
             return ResponseEntity.ok().body(personCreateResponse);
         }
 
-        Person createdPerson = personRepository.insert(personRequest);
+        Person createdPerson = personRepository.save(personRequest);
 
         personCreateResponse.setResult(new Result(messages.get("success"), 200));
         personCreateResponse.setPerson(createdPerson);
@@ -97,10 +95,15 @@ public class PersonController {
     }
 
     @GetMapping("/delete")
-    public ResponseEntity delete(@RequestParam("userName") String userName) {
+    public ResponseEntity<Result> delete(@RequestParam("userName") String userName, Errors errors) throws Exception {
+
+        Result result = new Result();
 
         Long person = personRepository.deleteByUserName(userName);
-        Result result = new Result();
+
+        if (errors.hasErrors()) {
+            return ResponseEntity.badRequest().body(generateResultFromErrors(errors));
+        }
 
         if (person == 1) {
             result.setCode(200);
@@ -113,13 +116,10 @@ public class PersonController {
         return ResponseEntity.status(result.getCode()).body(result);
     }
 
-
     private Result generateResultFromErrors(Errors errors) {
         Result result = new Result();
         result.setCode(400);
-        result.setMessage(errors.getAllErrors()
-                .stream()
-                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+        result.setMessage(errors.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.joining(",")));
         return result;
     }

@@ -1,17 +1,28 @@
 package tr.com.layemut.moviesservice.entity;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import lombok.*;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 @ToString
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "Genre")
+@Entity
+@Table(name = "Genre")
 public class Genre {
 
+    @Id
+    @Column(name = "GENREID")
     Long id;
 
+    @Column(name = "MOVIEID")
+    Long movieId;
+
+    @Column(name = "NAME")
     String name;
 }
