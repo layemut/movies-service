@@ -6,11 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.extern.slf4j.Slf4j;
 import tr.com.layemut.moviesservice.config.Messages;
+import tr.com.layemut.moviesservice.entity.Movie;
 import tr.com.layemut.moviesservice.repository.MovieRepository;
 
-@Slf4j
 @RestController
 @RequestMapping("/movie")
 public class MovieController {
@@ -25,8 +24,9 @@ public class MovieController {
     }
 
     @GetMapping
-    public ResponseEntity<Boolean> save() {
-        log.info("save called");
+    public ResponseEntity<Boolean> save(Movie movie) {
+        movie.setRunTime(messages.get("sample"));
+        movieRepository.save(movie);
         return ResponseEntity.ok().build();
     }
 }

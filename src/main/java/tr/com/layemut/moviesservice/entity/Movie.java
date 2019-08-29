@@ -1,12 +1,11 @@
 package tr.com.layemut.moviesservice.entity;
 
-import com.google.gson.annotations.SerializedName;
 import lombok.*;
-
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -20,34 +19,46 @@ import javax.persistence.Table;
 public class Movie {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "MOVIEID")
     Long id;
 
-    @Column(name = "ADULT")
-    boolean adult;
-
-    @Column(name = "BUDGET")
-    double budget;
-
-    @Column(name = "LANGUAGE")
-    @SerializedName("original_language")
-    String language;
-
     @Column(name = "TITLE")
-    @SerializedName("original_title")
     String title;
 
-    @Column(name = "OVERVIEW")
-    String overview;
+    @Column(name = "YEAR")
+    String year;
 
-    @Column(name = "RELEASEDATE")
-    @SerializedName("release_date")
-    Date releaseDate;
+    @Column(name = "RATED")
+    String rated;
+
+    @Column(name = "RELEASED")
+    String released;
 
     @Column(name = "RUNTIME")
-    @SerializedName("runtime")
-    int runTime;
+    String runTime;
 
-    @Column(name = "STATUS")
-    String status;
+    @Column(name = "GENRE")
+    String genre;
+
+    @Column(name = "DIRECTOR")
+    String director;
+
+    @Column(name = "WRITER")
+    String writer;
+
+    @Column(name = "ACTORS")
+    String actors;
+
+    @Column(name = "PLOT")
+    String plot;
+
+    @Column(name = "LANGUAGE")
+    String language;
+
+    @Column(name = "IMDBID")
+    String imdbId;
+
+    @Column(name = "WEBSITE")
+    String webSite;
 }

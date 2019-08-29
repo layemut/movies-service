@@ -2,8 +2,8 @@ package tr.com.layemut.moviesservice.entity;
 
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -62,7 +62,7 @@ public class Person implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.EMPTY_LIST;
+        return new ArrayList<>();
     }
 
     @Override
