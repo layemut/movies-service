@@ -2,15 +2,23 @@ package tr.com.layemut.moviesservice.entity;
 
 import lombok.*;
 
-import javax.annotation.Generated;
+import java.util.Collection;
+import java.util.Collections;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @ToString
 @Getter
@@ -19,7 +27,9 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @Entity
 @Table(name = "PERSON")
-public class Person {
+public class Person implements UserDetails {
+
+    private static final long serialVersionUID = -6074378947558289439L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -49,4 +59,45 @@ public class Person {
 
     @Column(name = "GENDER")
     private String gender = "U";
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return userName;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @PrePersist
+    @PreUpdate
+    public void beforeSave() {
+        setPassword(new BCryptPasswordEncoder().encode(password));
+    }
 }

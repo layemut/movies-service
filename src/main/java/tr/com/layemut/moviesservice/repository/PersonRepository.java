@@ -1,15 +1,16 @@
 package tr.com.layemut.moviesservice.repository;
 
-
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
+
 import tr.com.layemut.moviesservice.entity.Person;
 
 public interface PersonRepository extends CrudRepository<Person, Long> {
 
-    Person findByUserNameAndPassword(@Param("userName") String userName, @Param("password") String password);
+    Person findByUserNameAndPassword(String userName, String password);
 
-    Person findByUserName(@Param("userName") String userName);
+    Person findByUserName(String userName);
 
-    Long deleteByUserName(@Param("userName") String userName);
+    @Transactional
+    long deleteByUserName(String userName);
 }

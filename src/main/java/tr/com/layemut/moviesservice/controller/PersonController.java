@@ -33,38 +33,6 @@ public class PersonController {
         this.messages = messages;
     }
 
-    @PostMapping(value = "/authenticate")
-    public ResponseEntity<PersonAuthResponse> authenticate(@Valid @RequestBody AuthRequest authRequest, Errors errors) {
-
-        logger.info(authRequest.toString());
-
-        PersonAuthResponse personAuthResponse = new PersonAuthResponse();
-        Result result = new Result();
-
-        if (errors.hasErrors()) {
-            personAuthResponse.setResult(generateResultFromErrors(errors));
-            return ResponseEntity.badRequest().body(personAuthResponse);
-        }
-
-        Person person = personRepository.findByUserNameAndPassword(authRequest.getUserName(),
-                authRequest.getPassword());
-
-        if (person != null) {
-            result.setCode(200);
-            result.setMessage(messages.get("success"));
-            personAuthResponse.setPerson(person);
-            personAuthResponse.setResult(result);
-
-            return ResponseEntity.ok().body(personAuthResponse);
-        } else {
-            result.setCode(401);
-            result.setMessage(messages.get("username_password_not_exists"));
-
-            personAuthResponse.setResult(result);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(personAuthResponse);
-        }
-    }
-
     @PostMapping(value = "/create")
     public ResponseEntity<PersonCreateResponse> create(@Valid @RequestBody Person personRequest, Errors errors) {
 
@@ -77,7 +45,7 @@ public class PersonController {
             return ResponseEntity.badRequest().body(personCreateResponse);
         }
 
-        Person duplicatePerson = personRepository.findByUserName(personRequest.getUserName());
+        Person duplicatePerson = personRepository.findByUserName(personRequest.getUsername());
 
         if (duplicatePerson != null) {
             result.setCode(404);
@@ -95,15 +63,10 @@ public class PersonController {
     }
 
     @GetMapping("/delete")
-    public ResponseEntity<Result> delete(@RequestParam("userName") String userName, Errors errors) throws Exception {
+    public ResponseEntity<Result> delete(@RequestParam("userName") String userName) throws Exception {
 
         Result result = new Result();
-
         Long person = personRepository.deleteByUserName(userName);
-
-        if (errors.hasErrors()) {
-            return ResponseEntity.badRequest().body(generateResultFromErrors(errors));
-        }
 
         if (person == 1) {
             result.setCode(200);
